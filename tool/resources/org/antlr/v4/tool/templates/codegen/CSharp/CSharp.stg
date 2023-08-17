@@ -190,7 +190,7 @@ public interface I<file.grammarName>Visitor\<Result> : IParseTreeVisitor\<Result
 /// \</summary>
 /// \<param name="context">The parse tree.\</param>
 /// \<return>The visitor result.\</return>
-Result Visit<lname; format="cap">([NotNull] <file.parserName>.<lname; format="cap">Context context);}; separator="\n">
+Task\<Result> Visit<lname; format="cap">([NotNull] <file.parserName>.<lname; format="cap">Context context, CancellationToken cancellationToken);}; separator="\n">
 }
 <if(file.genPackage)>
 } // namespace <file.genPackage>
@@ -233,7 +233,7 @@ public partial class <file.grammarName>BaseVisitor\<Result> : AbstractParseTreeV
 /// \</summary>
 /// \<param name="context">The parse tree.\</param>
 /// \<return>The visitor result.\</return>
-public virtual Result Visit<lname; format="cap">([NotNull] <file.parserName>.<lname; format="cap">Context context) { return VisitChildren(context); \}}; separator="\n">
+public virtual async Task\<Result> Visit<lname; format="cap">([NotNull] <file.parserName>.<lname; format="cap">Context context, CancellationToken cancellationToken) { return await VisitChildren(context, cancellationToken); \}}; separator="\n">
 }
 <if(file.genPackage)>
 } // namespace <file.genPackage>
@@ -901,10 +901,10 @@ public override void <if(method.isEnter)>Enter<else>Exit<endif>Rule(IParseTreeLi
 
 VisitorDispatchMethod(method) ::= <<
 [System.Diagnostics.DebuggerNonUserCode]
-public override TResult Accept\<TResult>(IParseTreeVisitor\<TResult> visitor) {
+public override async Task\<TResult> Accept\<TResult>(IParseTreeVisitor\<TResult> visitor, CancellationToken cancellationToken) {
 	I<parser.grammarName>Visitor\<TResult> typedVisitor = visitor as I<parser.grammarName>Visitor\<TResult>;
-	if (typedVisitor != null) return typedVisitor.Visit<struct.derivedFromName; format="cap">(this);
-	else return visitor.VisitChildren(this);
+	if (typedVisitor != null) return await typedVisitor.Visit<struct.derivedFromName; format="cap">(this, cancellationToken);
+	else return await visitor.VisitChildren(this, cancellationToken);
 }
 >>
 
